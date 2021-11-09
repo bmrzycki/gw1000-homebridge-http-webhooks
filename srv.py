@@ -44,7 +44,7 @@ class CacheEntry():
     def __init__(self, entry):
         self._ttl = GLOBAL['cache_ttl']
         self._entry = entry
-        assert self._ttl > 0, f"Cache TTL invalid: {self._ttl}"
+        assert self._ttl >= 0, f"Cache TTL invalid: {self._ttl}"
 
     def get(self):
         if self._ttl:
