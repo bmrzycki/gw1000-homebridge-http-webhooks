@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
 import argparse
-import configparser
-import sys
 
+from configparser import ConfigParser
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 from signal import signal, SIGPIPE, SIG_DFL
+from sys import argv
 from time import sleep
 from threading import Lock
 from urllib.error import URLError
@@ -176,10 +176,10 @@ def main(args_raw):
     global VERBOSE
     VERBOSE = args.verbose
 
-    cfg = configparser.ConfigParser()
+    cfg = ConfigParser()
     try:
         cfg.read_file(args.config)
-    except configparser.ParsingError as e:
+    except Exception as e:
         p.error(str(e))
 
     SERVER['address'] = cfg.get('server', 'address',
@@ -222,4 +222,4 @@ def main(args_raw):
 
 if __name__ == '__main__':
     signal(SIGPIPE, SIG_DFL)  # Avoid exceptions for broken pipes
-    main(sys.argv[1:])
+    main(argv[1:])
