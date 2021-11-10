@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 import argparse
-import sys
 
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from signal import signal, SIGPIPE, SIG_DFL
+from sys import argv
 from urllib.parse import parse_qs, urlparse
 
 class Handler(BaseHTTPRequestHandler):
@@ -14,7 +14,13 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('Content-Length', 4)  # len("OK\r\n")
         self.end_headers()
         self.wfile.write(b"OK\r\n")
-        self.log_message(f"{kind} data={parse_qs(data)}")
+        qs = parse_qs(data)
+        for k in qs:
+            v = qs[k]
+            if len(v) == 1:
+                v = v[0]
+            qs[k] = v
+        self.log_message(f"{kind} data={qs}")
 
     def do_GET(self):
         self._rsp("GET", urlparse(self.path).query)
@@ -35,6 +41,7 @@ def main(args_raw):
         default=51828, type=int,
         help='IP port to listen on')
     args = p.parse_args(args_raw)
+    print(f"fake webhooks server listening on {args.address}:{args.port}")
 
     h = ThreadingHTTPServer((args.address, args.port), Handler)
     try:
@@ -45,4 +52,4 @@ def main(args_raw):
 
 if __name__ == '__main__':
     signal(SIGPIPE, SIG_DFL)  # Avoid exceptions for broken pipes
-    main(sys.argv[1:])
+    main(argv[1:])
