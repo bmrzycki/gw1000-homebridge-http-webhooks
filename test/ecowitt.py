@@ -55,9 +55,9 @@ def main(args_raw):
         default=False, action='store_true',
         help='Randomize datapoint values')
     p.add_argument(
-        '-t', '--temperature',
-        default='f', choices=['c', 'f'],
-        help='Temperature unit')
+        '-m', '--metric',
+        default=False, action='store_true',
+        help='Use metric units instead of imperial')
     p.add_argument(
         '--timeout',
         default=10.0, type=float,
@@ -76,27 +76,27 @@ def main(args_raw):
         'freq'          : '915M',
         'model'         : 'GW1000_Pro',
         'stationtype'   : 'GW1000B_V1.6.8',
-        # Indoor
-        'baromabsin'    : fn('baromabsin', '28.700'),
-        'baromrelin'    : fn('baromrelin', '28.700'),
         'humidityin'    : fn('humidityin', '64'),
-        # External
         'humidity'      : fn('humidity', '72'),
         'wh26batt'      : fn('wh26batt', '0'),
     }
 
-    if args.temperature == 'f':
-        data['tempinf'] = fn('tempinf', '-3.5')
-        data['tempf'] = fn('tempf', '84.2')
-    elif args.temperature == 'c':
+    if args.metric:
+        data['baromabshpa'] = fn('baromabshpa', '951.4')
+        data['baromrelhpa'] = fn('baromrelhpa', '951.4')
         data['tempinc'] = fn('tempinc', '12.5')
         data['tempc'] = fn('tempc', '23.3')
+    else:
+        data['baromabsin'] = fn('baromabsin', '28.700')
+        data['baromrelin'] = fn('baromrelin', '28.700')
+        data['tempinf'] = fn('tempinf', '-3.5')
+        data['tempf'] = fn('tempf', '84.2')
 
     for n in range(1, 8 + 1):
-        if args.temperature == 'f':
-            data[f"temp{n}f"] = fn(f"temp{n}f", f"{70.4+n:.2f}")
-        elif args.temperature == 'c':
+        if args.metric:
             data[f"temp{n}c"] = fn(f"temp{n}c", f"{30.1+n:.2f}")
+        else:
+            data[f"temp{n}f"] = fn(f"temp{n}f", f"{70.4+n:.2f}")
         data[f"humidity{n}"] = fn(f"humidity{n}", f"{10+n}")
         data[f"batt{n}"] = fn(f"batt{n}", '0')
         data[f"soilmoisture{n}"] = fn(f"soilmoisture{n}", f"{n}")
