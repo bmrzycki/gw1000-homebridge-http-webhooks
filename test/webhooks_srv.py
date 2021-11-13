@@ -9,11 +9,12 @@ from urllib.parse import parse_qs, urlparse
 
 class Handler(BaseHTTPRequestHandler):
     def _rsp(self, kind, data):
+        rsp = b'{"success":true}'
         self.send_response(200)
         self.send_header('Content-Type', 'text/html')
-        self.send_header('Content-Length', 4)  # len("OK\r\n")
+        self.send_header('Content-Length', len(rsp))
         self.end_headers()
-        self.wfile.write(b"OK\r\n")
+        self.wfile.write(rsp)
         qs = parse_qs(data)
         for k in qs:
             v = qs[k]
