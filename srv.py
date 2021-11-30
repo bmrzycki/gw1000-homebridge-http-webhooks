@@ -76,7 +76,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def _update(self, accessory_id, value):
         url = (f"http://{WEBHOOKS['host']}:{WEBHOOKS['port']}/"
-               f"?accessoryId={quote(accessory_id)}&value={value}")
+               f"?accessoryId={quote(accessory_id, safe='')}&value={value}")
         self._info(f"updating url='{url}'")
         try:
             rsp = urlopen(url=url, timeout=GLOBAL['url_timeout'])
